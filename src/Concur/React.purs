@@ -4,6 +4,7 @@ import Prelude
 
 import Concur.Core.Discharge (discharge, dischargePartialEffect)
 import Concur.Core.Types (Widget, display)
+import Concur.Core.LiftWidget (class LiftWidget, liftWidget)
 import Data.Either (Either(..))
 import Data.Tuple (Tuple(..))
 import Effect (Effect)
@@ -53,11 +54,12 @@ renderComponentWithLifeCycle ::
 renderComponentWithLifeCycle onMount onUnmount w = R.createLeafElement (componentClassWithMount onMount onUnmount w) {}
 
 runAsComponent ::
-  forall a.
+  forall a m.
+  LiftWidget HTML m =>
   Effect Unit ->
   Effect Unit ->
   Widget HTML a ->
-  Widget HTML a
-runAsComponent onMount onUnmount w = display jsx
+  m a
+runAsComponent onMount onUnmount w = liftWidget $ display jsx
   where
     jsx = [ renderComponentWithLifeCycle onMount onUnmount w ]
